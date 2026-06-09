@@ -1,0 +1,22 @@
+plugins {
+    id 'java'
+}
+
+group = 'com.tup.programacion3'
+version = '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // Dependencias de Lombok
+    compileOnly 'org.projectlombok:lombok:1.18.30'
+    annotationProcessor 'org.projectlombok:lombok:1.18.30'
+
+    // JPA y Hibernate (La versión 6.x usa 'jakarta' en vez de 'javax')
+    implementation 'org.hibernate.orm:hibernate-core:6.4.4.Final'
+
+    // Driver de la base de datos H2
+    runtimeOnly 'com.h2database:h2:2.2.224'
+}
