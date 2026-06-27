@@ -90,6 +90,21 @@ public class PedidoRepository extends BaseRepository<Pedido> {
         }
     }
 
+    public Double calcularTotalFacturado() {
+        jakarta.persistence.EntityManager em = com.tp.jpa.util.JPAUtil.getEntityManagerFactory().createEntityManager();
+        try {
+            // Usamos SUM() para que la base de datos haga el trabajo pesado
+            String jpql = "SELECT SUM(p.total) FROM Pedido p WHERE p.estado = :estado AND p.eliminado = false";
+            Double total = em.createQuery(jpql, Double.class)
+                    .setParameter("estado", com.tp.jpa.model.enums.EstadoPedido.TERMINADO)
+                    .getSingleResult();
+
+            return total != null ? total : 0.0;
+        } finally {
+            em.close();
+        }
+    }
+
     // Consulta JPQL: retorna todos los pedidos activos con un estado específico
     public List<Pedido> buscarPorEstado(com.tp.jpa.model.enums.EstadoPedido estado) {
         jakarta.persistence.EntityManager em = com.tp.jpa.util.JPAUtil.getEntityManagerFactory().createEntityManager();

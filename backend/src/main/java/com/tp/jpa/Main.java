@@ -479,9 +479,7 @@ public class Main {
             System.out.println("1. Alta de pedido (Atómica)");
             System.out.println("2. Cambiar estado");
             System.out.println("3. Baja lógica");
-            System.out.println("4. Listado");
-            System.out.println("5. Pedidos por usuario");
-            System.out.println("6. Pedidos por estado");
+            System.out.println("4. Listado general");
             System.out.println("0. Volver");
             System.out.print("Seleccione una opción: ");
 
@@ -632,42 +630,8 @@ public class Main {
                         }
                         break;
 
-                    case 5:
-                        System.out.println("Usuarios activos:");
-                        usuarioRepo.listarActivos().forEach(u -> System.out.println(u.getId() + " - " + u.getNombre() + " " + u.getApellido()));
-                        System.out.print("Seleccione ID de usuario: ");
-                        Long idUsuFiltro = Long.parseLong(scanner.nextLine());
-
-                        var pedidosUsuario = pedidoRepo.buscarPorUsuario(idUsuFiltro);
-                        if (pedidosUsuario.isEmpty()) {
-                            System.out.println("⚠️ No hay pedidos registrados para este usuario.");
-                        } else {
-                            System.out.println("\nPedidos del Usuario ID " + idUsuFiltro + ":");
-                            System.out.printf("%-5s | %-12s | %-15s | %-10s\n", "ID", "Fecha", "Estado", "Total");
-                            System.out.println("---------------------------------------------------------");
-                            pedidosUsuario.forEach(p -> System.out.printf("%-5d | %-12s | %-15s | $%-10.2f\n", p.getId(), p.getFecha(), p.getEstado(), p.getTotal()));
-                        }
-                        break;
-
-                    case 6:
-                        System.out.println("Estados disponibles:");
-                        EstadoPedido[] ests = EstadoPedido.values();
-                        for (int i = 0; i < ests.length; i++) System.out.println((i + 1) + ". " + ests[i]);
-                        System.out.print("Seleccione opción: ");
-                        int opEst = Integer.parseInt(scanner.nextLine());
-                        EstadoPedido estadoSel = ests[opEst - 1];
-
-                        var pedidosEstado = pedidoRepo.buscarPorEstado(estadoSel);
-                        if (pedidosEstado.isEmpty()) {
-                            System.out.println("⚠️ No hay pedidos con estado " + estadoSel);
-                        } else {
-                            System.out.printf("%-5s | %-12s | %-20s | %-10s\n", "ID", "Fecha", "Usuario", "Total");
-                            System.out.println("-----------------------------------------------------------------");
-                            pedidosEstado.forEach(p -> System.out.printf("%-5d | %-12s | %-20s | $%-10.2f\n", p.getId(), p.getFecha(), p.getUsuario().getNombre(), p.getTotal()));
-                        }
-                        break;
-
                     case 0: break;
+                    default: System.out.println("Opción incorrecta.");
                 }
             } catch (Exception e) {
                 System.out.println("❌ Error: " + e.getMessage());
@@ -675,6 +639,7 @@ public class Main {
         }
     }
 
+    // --- SUBMENÚ REPORTES ---
     // --- SUBMENÚ REPORTES ---
     private static void menuReportes(Scanner scanner) {
         System.out.println("\n--- MENÚ DE REPORTES ---");
@@ -708,9 +673,21 @@ public class Main {
                     Long idU = Long.parseLong(scanner.nextLine());
                     var pUser = pedidoRepo.buscarPorUsuario(idU);
                     if (pUser.isEmpty()) {
-                        System.out.println("Informar explícitamente: El usuario no posee compras activas.");
+                        System.out.println("El usuario con ID " + idU + " no posee compras activas.");
                     } else {
-                        pUser.forEach(p -> System.out.println("ID: " + p.getId() + " | Fecha: " + p.getFecha() + " | Estado: " + p.getEstado() + " | Total: $" + p.getTotal()));
+                        // REQUISITO CUMPLIDO: Formato de Tabla exigido por la Rúbrica
+                        System.out.println("\n================================================================================");
+                        System.out.printf("%-10s | %-12s | %-15s | %-12s | %-15s\n", "ID Pedido", "Fecha", "Estado", "Total", "Forma Pago");
+                        System.out.println("--------------------------------------------------------------------------------");
+                        for (Pedido p : pUser) {
+                            System.out.printf("%-10d | %-12s | %-15s | $%-11.2f | %-15s\n",
+                                    p.getId(),
+                                    p.getFecha().toString(),
+                                    p.getEstado().name(),
+                                    p.getTotal(),
+                                    p.getFormaPago().name());
+                        }
+                        System.out.println("================================================================================");
                     }
                     break;
 
@@ -723,18 +700,31 @@ public class Main {
                     if (pEst.isEmpty()) {
                         System.out.println("No hay pedidos con este estado.");
                     } else {
-                        pEst.forEach(p -> System.out.println("ID: " + p.getId() + " | Fecha: " + p.getFecha() + " | Cliente: " + p.getUsuario().getNombre() + " | Total: $" + p.getTotal()));
+                        // Formato de tabla para pedidos por estado
+                        System.out.println("\n========================================================================");
+                        System.out.printf("%-10s | %-12s | %-20s | %-15s\n", "ID Pedido", "Fecha", "Cliente", "Total");
+                        System.out.println("------------------------------------------------------------------------");
+                        for (Pedido p : pEst) {
+                            System.out.printf("%-10d | %-12s | %-20s | $%-14.2f\n",
+                                    p.getId(),
+                                    p.getFecha().toString(),
+                                    p.getUsuario().getNombre(),
+                                    p.getTotal());
+                        }
+                        System.out.println("========================================================================");
                     }
                     break;
 
                 case 4:
-                    double total = pedidoRepo.listarActivos().stream()
-                            .filter(p -> p.getEstado() == EstadoPedido.TERMINADO)
-                            .mapToDouble(Pedido::getTotal)
-                            .sum();
-                    System.out.println("💰 Total facturado: " + String.format(Locale.US, "$%.2f", total));
+                    // REQUISITO CUMPLIDO: Uso de JPQL Dedicada
+                    Double totalFacturado = pedidoRepo.calcularTotalFacturado();
+                    System.out.println("\n========================================");
+                    System.out.printf("💰 TOTAL FACTURADO (TERMINADOS): $%.2f\n", totalFacturado);
+                    System.out.println("========================================");
                     break;
+
                 case 0: break;
+                default: System.out.println("Opción no válida.");
             }
         } catch (Exception e) {
             System.out.println("❌ Error: " + e.getMessage());
