@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Catálogo - FoodStore</title>
+    <link rel="stylesheet" href="/src/style.css">
+    <style>
+        .catalog-container { display: flex; gap: 30px; max-width: 1200px; margin: 40px auto; padding: 0 20px; }
+        .sidebar { width: 250px; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); height: fit-content; }
+        .main-content { flex: 1; }
+        .controls-bar { display: flex; gap: 15px; margin-bottom: 25px; }
+        .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 20px; }
+        /* Efecto Hover para demostrar que la tarjeta es clickeable */
+        .product-card { background: white; border-radius: 10px; padding: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); transition: 0.3s; display: flex; flex-direction: column; cursor: pointer;}
+        .product-card:hover { transform: translateY(-5px); box-shadow: 0 8px 15px rgba(0,0,0,0.15); border: 1px solid #3498db; }
+        .custom-select { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #ddd; font-size: 1rem; box-sizing: border-box;}
+    </style>
+</head>
+<body style="background: #f4f7f6; margin: 0; font-family: 'Segoe UI', sans-serif;">
+    <header class="main-header">
+    <h2 style="margin: 0; font-size: 1.5rem;">
+        <a href="/src/pages/store/home/home.html">🍕 FoodStore</a>
+    </h2>
+    <div class="header-links">
+        <a href="/src/pages/client/orders/orders.html">Mis Pedidos</a>
+        <a href="/src/pages/store/cart/cart.html" style="font-size: 1.1rem;">🛒 Carrito (<span id="cart-count">0</span>)</a>
+        <button id="logoutButton" class="btn-logout">Salir</button>
+    </div>
+</header>
+
+    <div class="catalog-container">
+        <aside class="sidebar">
+            <h3 style="margin-top: 0; color: #2c3e50; border-bottom: 2px solid #eee; padding-bottom: 10px;">Categorías</h3>
+            <div id="category-filters" style="display: flex; flex-direction: column; gap: 10px;"></div>
+        </aside>
+
+        <main class="main-content">
+            <div class="controls-bar" style="display: flex; gap: 15px; margin-bottom: 25px;">
+    <input type="text" id="search-input" class="custom-input" placeholder="Buscar por nombre..." style="flex: 1; margin: 0;">
+    
+    <select id="sort-select" class="custom-select" style="width: auto; margin: 0;">
+        <option value="AZ">Nombre A-Z</option>
+        <option value="ZA">Nombre Z-A</option>
+        <option value="ASC">Precio Menor a Mayor</option>
+        <option value="DESC">Precio Mayor a Menor</option>
+    </select>
+</div>
+
+            <div id="lista-productos" class="product-grid"></div>
+        </main>
+    </div>
+
+    <script type="module" src="./home.ts"></script>
+</body>
+</html>

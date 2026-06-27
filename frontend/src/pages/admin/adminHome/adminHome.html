@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Panel Admin - FoodStore</title>
+    <link rel="stylesheet" href="/src/style.css">
+</head>
+<body class="admin-body">
+    <div class="admin-wrapper">
+        <aside class="sidebar">
+            <h2>Admin Panel</h2>
+            <nav>
+                <a href="/src/pages/admin/adminHome/adminHome.html">Dashboard</a>
+                <a href="/src/pages/admin/categories/categorias.html">Categorías</a>
+                <a href="/src/pages/admin/products/productos.html">Productos</a>
+                <a href="/src/pages/admin/orders/pedidos.html">Pedidos</a>
+                <hr>
+                <a href="/src/pages/store/home/home.html">Ver Tienda</a>
+            </nav>
+        </aside>
+
+        <main class="admin-content">
+            <h1>Dashboard</h1>
+            
+            <div class="stats-grid">
+                <div class="stat-card stat-cat"><h3>Categorías</h3><p id="stat-cat">0</p></div>
+                <div class="stat-card stat-prod"><h3>Productos</h3><p id="stat-prod">0</p></div>
+                <div class="stat-card stat-ped"><h3>Pedidos</h3><p id="stat-ped">0</p></div>
+                <div class="stat-card stat-disp"><h3>Disponibles</h3><p id="stat-disp">0</p></div>
+            </div>
+            
+            <div class="summary-panel">
+                <h3>Resumen de Estado</h3>
+                <div id="summary-content">Cargando métricas...</div>
+            </div>
+        </main>
+    </div>
+    <script type="module" src="./adminHome.ts"></script>
+</body>
+</html>

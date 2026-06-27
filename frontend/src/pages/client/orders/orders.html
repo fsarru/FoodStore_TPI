@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Mis Pedidos - FoodStore</title>
+    <link rel="stylesheet" href="/src/style.css">
+    <style>
+        /* Clases utilitarias por si no están en tu style.css global */
+        .custom-select { padding: 10px; border-radius: 6px; border: 1px solid #ccc; font-size: 1rem; }
+    </style>
+</head>
+<body style="background: #f4f7f6; margin: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+    
+    <header class="main-header">
+        <h2 style="margin: 0; font-size: 1.5rem;">
+            <a href="/src/pages/store/home/home.html">🍕 FoodStore</a>
+        </h2>
+        <div class="header-links">
+            <a href="/src/pages/client/orders/orders.html" style="color: #3498db;">Mis Pedidos</a>
+            <a href="/src/pages/store/cart/cart.html" style="font-size: 1.1rem;">🛒 Carrito (<span id="cart-count">0</span>)</a>
+            <button id="logoutButton" class="btn-logout">Salir</button>
+        </div>
+    </header>
+
+    <div class="container" style="max-width: 900px; margin: 40px auto; padding: 30px; background: white; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+        
+        <h1 style="color: #2c3e50; border-bottom: 2px solid #eee; padding-bottom: 15px; margin-top: 0;">Mis Pedidos 📝</h1>
+
+        <div style="margin: 20px 0; display: flex; align-items: center; gap: 10px; background: #f8f9fa; padding: 15px; border-radius: 8px;">
+            <label style="font-weight: bold; color: #2c3e50;">Filtrar por Estado:</label>
+            <select id="estado-filter" class="custom-select" style="width: auto; min-width: 250px; margin: 0;">
+                <option value="TODOS" selected>👉 Todos los pedidos</option>
+                <option value="PENDIENTE">Pendientes</option>
+                <option value="CONFIRMADO">Confirmados</option>
+                <option value="TERMINADO">Terminados</option>
+                <option value="CANCELADO">Cancelados</option>
+            </select>
+        </div>
+
+        <div id="orders-container" style="margin-top: 20px;">
+            </div>
+
+    </div>
+
+    <div id="order-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); justify-content:center; align-items:center; z-index:1000;">
+        <div style="background:white; padding:30px; border-radius:12px; width:90%; max-width:600px; max-height: 90vh; overflow-y: auto; box-shadow: 0 10px 25px rgba(0,0,0,0.2);">
+            <h2 style="margin-top: 0; color: #2c3e50; border-bottom: 2px solid #eee; padding-bottom: 10px;">Detalle del Pedido</h2>
+            <div id="modal-content"></div>
+        </div>
+    </div>
+
+    <script type="module" src="./orders.ts"></script>
+</body>
+</html>

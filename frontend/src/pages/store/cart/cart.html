@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Carrito - FoodStore</title>
+    <link rel="stylesheet" href="/src/style.css">
+    <style>
+        .cart-container { max-width: 1000px; margin: 40px auto; padding: 20px; }
+        .cart-item-row { display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 1px solid #eee; }
+        .btn-qty { padding: 5px 10px; cursor: pointer; border-radius: 4px; border: 1px solid #ccc; font-weight: bold; }
+        .btn-qty:hover { background: #f1f1f1; }
+        
+        /* Modal de Checkout */
+        .modal-overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6); backdrop-filter: blur(3px);
+            justify-content: center; align-items: center; z-index: 2000;
+        }
+        .checkout-box {
+            background: white; padding: 30px; border-radius: 12px; width: 90%; max-width: 500px;
+            position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        .btn-close-modal {
+            position: absolute; top: 15px; right: 20px; background: none; border: none;
+            font-size: 1.8rem; cursor: pointer; color: #95a5a6; transition: 0.2s;
+        }
+        .btn-close-modal:hover { color: #e74c3c; }
+        .custom-input { width: 100%; padding: 10px; margin-bottom: 15px; border-radius: 6px; border: 1px solid #ccc; box-sizing: border-box; font-family: inherit; }
+    </style>
+</head>
+<body style="background: #f4f7f6; margin: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+    
+    <header class="main-header">
+        <h2 style="margin: 0; font-size: 1.5rem;">
+            <a href="/src/pages/store/home/home.html">🍕 FoodStore</a>
+        </h2>
+        <div class="header-links">
+            <a href="/src/pages/client/orders/orders.html">Mis Pedidos</a>
+            <a href="/src/pages/store/cart/cart.html" style="font-size: 1.1rem;">🛒 Carrito (<span id="cart-count">0</span>)</a>
+            <button id="logoutButton" class="btn-logout">Salir</button>
+        </div>
+    </header>
+
+    <div class="cart-container">
+        <h2 style="color: #2c3e50; margin-bottom: 20px;">Tu Carrito de Compras</h2>
+        
+        <div class="cart-header" style="display: flex; justify-content: space-between; font-weight: bold; border-bottom: 2px solid #3498db; padding-bottom: 10px; margin-bottom: 15px; color: #34495e;">
+            <span style="flex: 2;">Producto</span>
+            <span style="flex: 1; text-align: center;">Cantidad</span>
+            <span style="flex: 1; text-align: right;">Precio</span>
+            <span style="flex: 1; text-align: right;">Subtotal</span>
+            <span style="flex: 1; text-align: center;">Acciones</span>
+        </div>
+
+        <div id="cart-items"></div>
+
+        <div class="cart-footer" style="margin-top: 30px; display: flex; justify-content: space-between; align-items: flex-end;">
+            <div style="display: flex; gap: 10px;">
+                <button id="btn-clear-cart" style="padding: 10px 20px; background: white; color: #e74c3c; border: 2px solid #e74c3c; border-radius: 6px; cursor: pointer; font-weight: bold;">Vaciar Carrito</button>
+                <button id="btn-checkout" style="padding: 10px 20px; background: #27ae60; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 1.1rem;">Proceder al Pago</button>
+            </div>
+            
+            <div id="cart-total" style="text-align: right; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border-left: 4px solid #27ae60;">
+                </div>
+        </div>
+    </div>
+
+    <div id="checkout-modal" class="modal-overlay">
+        <div class="checkout-box">
+            <button id="btn-close-checkout" class="btn-close-modal">&times;</button>
+            <h2 style="margin-top: 0; color: #2c3e50; border-bottom: 2px solid #eee; padding-bottom: 10px;">Finalizar Pedido</h2>
+            
+            <form id="checkout-form">
+                <label style="display:block; margin-bottom:5px; font-weight:bold; color:#555; font-size: 0.9rem;">Teléfono de Contacto</label>
+                <input type="text" id="chk-telefono" class="custom-input" required placeholder="Ej: 11 2345 6789">
+
+                <label style="display:block; margin-bottom:5px; font-weight:bold; color:#555; font-size: 0.9rem;">Dirección de Entrega</label>
+                <input type="text" id="chk-direccion" class="custom-input" required placeholder="Ej: Av. Siempre Viva 742">
+
+                <label style="display:block; margin-bottom:5px; font-weight:bold; color:#555; font-size: 0.9rem;">Método de Pago</label>
+                <select id="chk-pago" class="custom-input" required style="cursor: pointer;">
+                    <option value="" disabled selected>Seleccione un método...</option>
+                    <option value="EFECTIVO">Efectivo al recibir</option>
+                    <option value="MERCADOPAGO">MercadoPago</option>
+                    <option value="TARJETA">Tarjeta de Débito / Crédito</option>
+                </select>
+
+                <label style="display:block; margin-bottom:5px; font-weight:bold; color:#555; font-size: 0.9rem;">Notas (Opcional)</label>
+                <textarea id="chk-notas" class="custom-input" placeholder="Ej: Dejar en portería, no funciona el timbre..." style="resize: vertical; min-height: 60px;"></textarea>
+
+                <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; text-align: right; margin-bottom: 20px; border: 1px solid #ddd;">
+                    <span style="font-size: 1rem; color: #7f8c8d;">Total a Pagar:</span>
+                    <strong id="chk-total-display" style="display: block; font-size: 1.8rem; color: #27ae60;">$0.00</strong>
+                </div>
+
+                <button type="submit" style="width: 100%; background: #27ae60; color: white; border: none; padding: 15px; border-radius: 8px; font-size: 1.2rem; font-weight: bold; cursor: pointer; transition: 0.3s;">
+                    Confirmar Compra
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script type="module" src="./cart.ts"></script>
+</body>
+</html>

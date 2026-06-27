@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Detalle de Producto</title>
+    <link rel="stylesheet" href="/src/style.css">
+    <style>
+        .detail-wrapper { max-width: 900px; margin: 40px auto; padding: 30px; display: grid; grid-template-columns: 1fr 1fr; gap: 40px; background: white; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        .detail-img { width: 100%; border-radius: 8px; object-fit: cover; aspect-ratio: 1/1; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        .detail-info { display: flex; flex-direction: column; justify-content: center; }
+        .qty-selector { display: flex; align-items: center; gap: 15px; margin: 20px 0; }
+        .qty-input { width: 70px; padding: 10px; font-size: 1.1rem; text-align: center; border: 1px solid #ccc; border-radius: 6px; }
+        .btn-add { background: #27ae60; color: white; padding: 15px 20px; border: none; border-radius: 8px; font-size: 1.1rem; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        .btn-add:hover:not(:disabled) { background: #219150; transform: translateY(-2px); }
+        .btn-add:disabled { background: #bdc3c7; cursor: not-allowed; }
+        .btn-back { background: #f1f2f6; color: #333; padding: 10px 15px; border: none; border-radius: 6px; cursor: pointer; margin-bottom: 20px; align-self: flex-start; text-decoration: none; font-weight: bold;}
+    </style>
+</head>
+<body style="background: #f4f7f6; margin: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+    
+<header class="main-header">
+    <h2 style="margin: 0; font-size: 1.5rem;">
+        <a href="/src/pages/store/home/home.html">🍕 FoodStore</a>
+    </h2>
+    <div class="header-links">
+        <a href="/src/pages/client/orders/orders.html">Mis Pedidos</a>
+        <a href="/src/pages/store/cart/cart.html" style="font-size: 1.1rem;">🛒 Carrito (<span id="cart-count">0</span>)</a>
+        <button id="logoutButton" class="btn-logout">Salir</button>
+    </div>
+</header>
+
+    <div class="detail-wrapper" id="product-detail-content">
+        <h3 style="grid-column: span 2; text-align: center; color: #7f8c8d;">Cargando detalle del producto...</h3>
+    </div>
+
+    <script type="module" src="./productDetail.ts"></script>
+</body>
+</html>

@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Login - Food Store</title>
+    <link rel="stylesheet" href="/src/style.css">
+    <style>
+        /* Estilos base para centrar el login y darle forma de tarjeta */
+        .login-body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .login-container {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            width: 100%;
+            max-width: 380px;
+        }
+        .login-title {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 25px;
+            font-size: 2rem;
+        }
+        /* Estilo para los campos de texto */
+        .custom-input {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+        .custom-input:focus {
+            border-color: #3498db;
+            outline: none;
+            box-shadow: 0 0 5px rgba(52, 152, 219, 0.3);
+        }
+        /* Estilos compartidos para los botones */
+        .btn-auth {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 10px;
+            display: block;
+        }
+        /* Botón Ingresar (Sólido) */
+        .btn-ingresar {
+            background-color: #3498db;
+            color: white;
+            border: none;
+        }
+        .btn-ingresar:hover {
+            background-color: #2980b9;
+            transform: translateY(-2px);
+        }
+        /* Botón Registro (Contorno) */
+        .btn-registro {
+            background-color: transparent;
+            color: #3498db;
+            border: 2px solid #3498db;
+        }
+        .btn-registro:hover {
+            background-color: #f0f8ff;
+            transform: translateY(-2px);
+        }
+        /* Caja de credenciales de prueba */
+        .test-accounts {
+            margin-top: 25px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #3498db;
+            font-size: 0.9rem;
+            color: #555;
+        }
+    </style>
+</head>
+<body class="login-body"> 
+    <div class="login-container">
+        <h2 class="login-title">Food Store</h2>
+        
+        <form id="login-form" class="login-form">
+            <input type="email" id="email" class="custom-input" required placeholder="Ingrese su usuario">
+            <input type="password" id="password" class="custom-input" required placeholder="Ingrese su Contraseña">
+            
+            <button type="submit" class="btn-auth btn-ingresar">Ingresar</button>
+            <button type="button" id="btn-register" class="btn-auth btn-registro">Registrarse</button>
+        </form>
+    
+        <div class="test-accounts">
+            <p style="margin: 0 0 5px 0; font-weight: bold;">Cuentas de prueba:</p>
+            <p style="margin: 3px 0;">Admin: admin@admin.com | 123456</p>
+            <p style="margin: 3px 0;">Cliente: cliente@food.com | cliente123</p>
+        </div>
+    </div>
+    
+    <script type="module" src="./login.ts"></script>
+</body>
+</html>
