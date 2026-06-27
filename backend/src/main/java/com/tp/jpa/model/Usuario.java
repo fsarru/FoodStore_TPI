@@ -1,0 +1,39 @@
+package com.tp.jpa.model;
+
+import com.tp.jpa.model.enums.Rol;
+import jakarta.persistence.*;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
+
+@Entity
+@Table(name = "usuarios")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@SuperBuilder
+@EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = false)
+@ToString(callSuper = true)
+public class Usuario extends Base {
+
+    @Column(name = "nombre",nullable = false, length = 50)
+    private String nombre;
+
+    @Column(name = "apellido", nullable = false, length = 50)
+    private String apellido;
+
+    @EqualsAndHashCode.Include
+    @Column(name = "mail", nullable = false, unique = true, length = 150)
+    private String mail;
+
+    @Column(name = "celular", length = 20)
+    private String celular;
+
+    @Column(name = "contrasena")
+    private String contraseña;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "rol", nullable = false, length = 20)
+    @Builder.Default
+    private Rol rol = Rol.USUARIO;
+}
