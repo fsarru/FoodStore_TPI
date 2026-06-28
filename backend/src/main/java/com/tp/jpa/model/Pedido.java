@@ -50,13 +50,13 @@ public class Pedido extends Base implements Calculable {
     @JoinColumn(name = "usuario_id", nullable = false)
     private Usuario usuario;
 
-    // ✅ ESTA ES LA CLAVE DE LA UNIDIRECCIONALIDAD QUE TE PIDIERON
+
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
-    @JoinColumn(name = "pedido_id") // Esto le dice a JPA que cree una FK en la tabla DetallePedido
+    @JoinColumn(name = "pedido_id")
     @Builder.Default
     private List<DetallePedido> detalles = new ArrayList<>();
 
-    // --- MÉTODOS DE NEGOCIO ---
+
 
     public void addDetallePedido(int cantidad, Producto producto) {
         // ✅ CORRECCIÓN DE ERRORES: Ya no lleva .pedido(this)

@@ -39,7 +39,7 @@ public class Producto extends Base {
     @Column(name = "disponible")
     private Boolean disponible = Boolean.TRUE;
 
-    // --- NUEVA RELACIÓN BIDIRECCIONAL ---
+
     @ManyToOne
     @JoinColumn(name = "categoria_id")
     private Categoria categoria;
