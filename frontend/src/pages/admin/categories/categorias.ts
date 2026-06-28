@@ -7,7 +7,7 @@ checkAuthUser(["ADMIN"]);
 const tbody = document.getElementById("cat-table-body");
 const modalCat = document.getElementById("modal-categoria") as HTMLElement;
 const formCat = document.getElementById("form-categoria") as HTMLFormElement;
-const btnAddCat = document.getElementById("btn-add-cat");
+const btnAddCat = document.getElementById("btn-add-category"); // ✅ CORREGIDO: ID correcto
 
 const renderCategorias = async () => {
     if (!tbody) return;
@@ -21,17 +21,25 @@ const renderCategorias = async () => {
     // Filtramos las que no estén eliminadas de forma lógica (soft delete)
     const activas = cats.filter((c: any) => !c.eliminado);
 
+    if (activas.length === 0) {
+        tbody.innerHTML = "<tr><td colspan='5' style='text-align:center; padding:20px;'>No hay categorías activas</td></tr>";
+        return;
+    }
+
     tbody.innerHTML = activas.map((c: any) => `
         <tr style="border-bottom: 1px solid #eee;">
             <td style="padding: 10px;">${c.id}</td>
             <td style="padding: 10px;">
-                <img src="${c.imagen || 'https://via.placeholder.com/50'}" width="50" style="border-radius: 6px; object-fit: cover; aspect-ratio: 1/1;" onerror="this.src='https://via.placeholder.com/50'">
+                <img src="${c.imagen || 'https://via.placeholder.com/50/cccccc/666666?text=Img'}" 
+                     width="50" 
+                     style="border-radius: 6px; object-fit: cover; aspect-ratio: 1/1;" 
+                     onerror="this.onerror=null; this.src='https://via.placeholder.com/50/cccccc/666666?text=Img'">
             </td>
-            <td style="padding: 10px; font-weight: 500;">${c.nombre || c.denominacion || 'Sin nombre'}</td>
+            <td style="padding: 10px; font-weight: bold; color: #2c3e50;">${c.nombre || c.denominacion || 'Sin nombre'}</td>
             <td style="padding: 10px; color: #7f8c8d;">${c.descripcion || 'Sin descripción'}</td>
             <td style="padding: 10px;">
-                <button class="btn-edit" data-id="${c.id}">Editar</button>
-                <button class="btn-delete" data-id="${c.id}">Eliminar</button>
+                <button class="btn-edit" data-id="${c.id}" style="background:#f1c40f; border:none; padding:6px 12px; cursor:pointer; border-radius:4px; font-weight:bold; margin-right: 5px;">Editar</button>
+                <button class="btn-delete" data-id="${c.id}" style="background:#e74c3c; color:white; border:none; padding:6px 12px; cursor:pointer; border-radius:4px; font-weight:bold;">Eliminar</button>
             </td>
         </tr>
     `).join("");
@@ -48,14 +56,16 @@ formCat?.addEventListener("submit", (e) => {
     e.preventDefault();
     const idEdit = (document.getElementById("c-id-edit") as HTMLInputElement).value;
     const nombre = (document.getElementById("c-nombre") as HTMLInputElement).value;
-    const descripcion = (document.getElementById("c-descripcion") as HTMLTextAreaElement).value;
+    const descripcion = (document.getElementById("c-desc") as HTMLInputElement).value; // ✅ CORREGIDO: Se busca 'c-desc'
     const imagen = (document.getElementById("c-imagen") as HTMLInputElement).value;
 
     let cats = getAdminData("categorias");
 
     if (idEdit) {
-        const index = cats.findIndex((c: any) => c.id === parseInt(idEdit));
-        cats[index] = { ...cats[index], nombre, denominacion: nombre, descripcion, imagen };
+        const index = cats.findIndex((c: any) => String(c.id) === String(idEdit));
+        if (index > -1) {
+            cats[index] = { ...cats[index], nombre, denominacion: nombre, descripcion, imagen };
+        }
     } else {
         cats.push({ id: Date.now(), nombre, denominacion: nombre, descripcion, imagen, eliminado: false });
     }
@@ -68,27 +78,39 @@ formCat?.addEventListener("submit", (e) => {
 // --- ELIMINAR / CARGAR PARA EDICIÓN ---
 tbody?.addEventListener("click", (e) => {
     const target = e.target as HTMLElement;
-    const id = parseInt(target.getAttribute("data-id") || "0");
+    const btnDelete = target.closest(".btn-delete");
+    const btnEdit = target.closest(".btn-edit");
+
     let cats = getAdminData("categorias");
 
-    if (target.classList.contains("btn-delete")) {
-        // CORRECCIÓN: Confirmación obligatoria antes de eliminar
+    if (btnDelete) {
+        const id = btnDelete.getAttribute("data-id");
         if (confirm("⚠️ ¿Estás totalmente seguro de que deseas eliminar esta categoría?")) {
-            const index = cats.findIndex((c: any) => c.id === id);
-            cats[index].eliminado = true; // Soft delete
-            saveAdminData("categorias", cats);
-            renderCategorias();
+            const index = cats.findIndex((c: any) => String(c.id) === String(id));
+            if (index > -1) {
+                cats[index].eliminado = true; // Soft delete
+                saveAdminData("categorias", cats);
+                renderCategorias();
+            }
         }
-    } else if (target.classList.contains("btn-edit")) {
-        const cat = cats.find((c: any) => c.id === id);
+    } else if (btnEdit) {
+        const id = btnEdit.getAttribute("data-id");
+        const cat = cats.find((c: any) => String(c.id) === String(id));
         if (cat) {
             (document.getElementById("c-nombre") as HTMLInputElement).value = cat.nombre || cat.denominacion;
-            (document.getElementById("c-descripcion") as HTMLTextAreaElement).value = cat.descripcion || "";
+            (document.getElementById("c-desc") as HTMLInputElement).value = cat.descripcion || ""; // ✅ CORREGIDO: Carga datos previos
             (document.getElementById("c-imagen") as HTMLInputElement).value = cat.imagen || "";
             (document.getElementById("c-id-edit") as HTMLInputElement).value = cat.id.toString();
             modalCat.style.display = "flex";
         }
     }
+});
+
+// --- LOGOUT ---
+document.getElementById("logoutButton")?.addEventListener("click", () => {
+    localStorage.removeItem("user");
+    localStorage.removeItem("cart");
+    window.location.href = "/src/pages/auth/login/login.html";
 });
 
 renderCategorias();
