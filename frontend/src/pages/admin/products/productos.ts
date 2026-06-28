@@ -1,7 +1,7 @@
 import { fetchProductos, fetchCategorias } from "../../../utils/data";
 import { getAdminData, saveAdminData } from "../../../utils/storage";
 
-// --- REFERENCIAS AL DOM ---
+
 const tableBody = document.getElementById("product-table-body") as HTMLElement;
 const modal = document.getElementById("modal-producto") as HTMLElement;
 const formProducto = document.getElementById("form-producto") as HTMLFormElement;
@@ -25,6 +25,7 @@ const renderTable = async () => {
     
     if (!tableBody) return;
 
+
     tableBody.innerHTML = prods.map((p: any) => {
         const idCat = p.categoriaId || p.idCategoria || (p.categoria ? p.categoria.id : null);
         const cat = cats.find((c: any) => c.id === idCat);
@@ -34,7 +35,9 @@ const renderTable = async () => {
                 <td>${p.id}</td>
                 <td><img src="${p.imagen}" width="50" onerror="this.src='placeholder.jpg'"></td>
                 <td>${p.nombre}</td>
+                <td>${p.descripcion || 'Sin descripción'}</td>
                 <td>$${p.precio}</td>
+                <td>${p.stock !== undefined ? p.stock : 0}</td>
                 <td>${cat ? cat.nombre || cat.denominacion : 'Sin categoría'}</td>
                 <td>${p.disponible ? '✅' : '❌'}</td>
                 <td>
@@ -46,12 +49,12 @@ const renderTable = async () => {
     }).join("");
 };
 
-// --- EVENTO APERTURA MODAL (NUEVO PRODUCTO) ---
+
 btnAdd?.addEventListener("click", async () => {
     formProducto.reset();
     (document.getElementById("p-id-edit") as HTMLInputElement).value = "";
     
-    // 1. Obtener categorías (forzar carga desde JSON si está vacío)
+
     let cats = getAdminData("categorias");
     if (cats.length === 0) {
         cats = await fetchCategorias();
@@ -72,26 +75,36 @@ btnAdd?.addEventListener("click", async () => {
     modal.style.display = "flex";
 });
 
-// --- EVENTO GUARDAR (ALTA/EDICIÓN) ---
+
 formProducto?.addEventListener("submit", (e) => {
     e.preventDefault();
     
-    // Captura los valores
+    // Captura los valores incluyendo Descripción y Stock
     const idEdit = (document.getElementById("p-id-edit") as HTMLInputElement).value;
     const nombre = (document.getElementById("p-nombre") as HTMLInputElement).value;
+    const descripcion = (document.getElementById("p-descripcion") as HTMLTextAreaElement).value;
     const precio = parseFloat((document.getElementById("p-precio") as HTMLInputElement).value);
+    const stock = parseInt((document.getElementById("p-stock") as HTMLInputElement).value);
     const catId = (document.getElementById("categoria-select") as HTMLSelectElement).value;
-    const imagen = (document.getElementById("p-imagen") as HTMLInputElement).value; // <-- CAPTURA LA URL
+    const imagen = (document.getElementById("p-imagen") as HTMLInputElement).value;
+
+
+    if (precio <= 0) {
+        return alert("El precio debe ser estrictamente mayor a 0.");
+    }
+    if (stock < 0 || isNaN(stock)) {
+        return alert("El stock debe ser un número positivo (mayor o igual a 0).");
+    }
 
     let productos = getAdminData("productos");
 
     if (idEdit) {
-        // Editar: actualizamos incluyendo la nueva imagen
+        // Editar: actualizamos incluyendo descripcion y stock
         const index = productos.findIndex((p: any) => p.id === parseInt(idEdit));
-        productos[index] = { ...productos[index], nombre, precio, categoriaId: parseInt(catId), imagen };
+        productos[index] = { ...productos[index], nombre, descripcion, precio, stock, categoriaId: parseInt(catId), imagen };
     } else {
-        // Nuevo: incluimos la propiedad 'imagen'
-        productos.push({ id: Date.now(), nombre, precio, categoriaId: parseInt(catId), imagen, disponible: true, eliminado: false });
+        // Nuevo: incluimos la propiedad 'descripcion' y 'stock'
+        productos.push({ id: Date.now(), nombre, descripcion, precio, stock, categoriaId: parseInt(catId), imagen, disponible: true, eliminado: false });
     }
 
     saveAdminData("productos", productos);
@@ -99,7 +112,7 @@ formProducto?.addEventListener("submit", (e) => {
     renderTable();
 });
 
-// --- EVENTOS DE LA TABLA (ELIMINAR/EDITAR) ---
+
 tableBody?.addEventListener("click", async (e) => {
     const target = e.target as HTMLElement;
     const id = parseInt(target.getAttribute("data-id") || "0");
@@ -129,11 +142,16 @@ tableBody?.addEventListener("click", async (e) => {
             select.innerHTML = cats.map((c: any) => 
                 `<option value="${c.id}">${c.denominacion || c.nombre}</option>`
             ).join("");
+            
+
             (document.getElementById("p-nombre") as HTMLInputElement).value = prod.nombre;
+            (document.getElementById("p-descripcion") as HTMLTextAreaElement).value = prod.descripcion || "";
             (document.getElementById("p-precio") as HTMLInputElement).value = prod.precio;
-            (document.getElementById("p-imagen") as HTMLInputElement).value = prod.imagen || ""; // <-- CARGA LA URL
+            (document.getElementById("p-stock") as HTMLInputElement).value = prod.stock !== undefined ? prod.stock : 0;
+            (document.getElementById("p-imagen") as HTMLInputElement).value = prod.imagen || "";
             (document.getElementById("p-id-edit") as HTMLInputElement).value = prod.id.toString();
             select.value = prod.categoriaId ? prod.categoriaId.toString() : "";
+            
             modal.style.display = "flex";
         }
     }

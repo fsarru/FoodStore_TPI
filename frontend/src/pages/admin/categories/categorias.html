@@ -5,6 +5,16 @@
     <title>Gestionar Categorías</title>
     <link rel="stylesheet" href="/src/style.css">
 </head>
+
+<button id="btn-add-cat" class="btn-base">Nueva Categoría</button>
+        
+        <table class="admin-table">
+            <thead>
+                <tr><th>ID</th><th>Imagen</th><th>Nombre</th><th>Descripción</th><th>Acciones</th></tr>
+            </thead>
+            <tbody id="cat-table-body"></tbody>
+        </table>
+
 <body class="admin-body">
     <div class="admin-wrapper">
         <aside class="sidebar">
@@ -27,5 +37,20 @@
         </main>
     </div>
     <script type="module" src="./categorias.ts"></script>
+
+    <div id="modal-categoria" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1000;">
+    <div style="background:white; width:400px; margin:100px auto; padding:20px; border-radius:8px;">
+        <h2>Categoría</h2>
+        <form id="form-categoria">
+            <input type="text" id="c-nombre" placeholder="Nombre" required style="width:100%; margin-bottom:10px;" class="custom-input">
+            <textarea id="c-descripcion" placeholder="Descripción" style="width:100%; margin-bottom:10px; font-family:inherit" class="custom-input"></textarea>
+            <input type="text" id="c-imagen" placeholder="URL de la imagen" required style="width:100%; margin-bottom:10px;" class="custom-input">
+            <button type="submit" class="btn-base" style="width:100%; margin-bottom:5px;">Guardar Categoría</button>
+            <button type="button" class="btn-registro" style="width:100%;" onclick="document.getElementById('modal-categoria').style.display='none'">Cancelar</button>
+        </form>
+        <input type="hidden" id="c-id-edit" value="">
+    </div>
+</div>
+
 </body>
 </html>

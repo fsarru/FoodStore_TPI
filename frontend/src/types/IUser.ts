@@ -2,6 +2,8 @@ export interface IUser {
     id: number;
     mail: string;
     password: string;
+    nombre: string;
+    apellido: string;
     rol: "ADMIN" | "USUARIO";
 }
 
@@ -20,5 +22,5 @@ export interface CartItem {
     precio: number;
     cantidad: number;
     imagen?: string;
-    stock?: number; // <--- AGREGAR ESTA LÍNEA CON EL SIGNO DE INTERROGACIÓN
+    stock?: number; 
 }

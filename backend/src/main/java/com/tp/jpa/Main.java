@@ -640,7 +640,6 @@ public class Main {
     }
 
     // --- SUBMENÚ REPORTES ---
-    // --- SUBMENÚ REPORTES ---
     private static void menuReportes(Scanner scanner) {
         System.out.println("\n--- MENÚ DE REPORTES ---");
         System.out.println("1. Productos por categoría");

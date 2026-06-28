@@ -21,7 +21,7 @@
             <button id="btn-add-product" class="btn-base">Nuevo Producto</button>
 <table class="admin-table">
     <thead>
-        <tr><th>ID</th><th>Imagen</th><th>Nombre</th><th>Precio</th><th>Categoría</th><th>Estado</th><th>Acciones</th></tr>
+        <tr><th>ID</th><th>Imagen</th><th>Nombre</th><th>Descripción</th><th>Precio</th><th>Stock</th><th>Categoría</th><th>Estado</th><th>Acciones</th></tr>
     </thead>
     <tbody id="product-table-body"></tbody>
 </table>
@@ -33,13 +33,18 @@
     <div style="background:white; width:400px; margin:100px auto; padding:20px; border-radius:8px;">
         <h2>Nuevo Producto</h2>
         <form id="form-producto">
-            <input type="text" id="p-nombre" placeholder="Nombre" required style="width:100%; margin-bottom:10px;">
-            <input type="number" id="p-precio" placeholder="Precio" required style="width:100%; margin-bottom:10px;">
-            <input type="text" id="p-imagen" placeholder="URL de la imagen (ej: https://via.placeholder.com/150)" required style="width:100%; margin-bottom:10px;">
-            <select id="categoria-select" class="custom-input" required></select>
-            <button type="submit" class="btn-base">Guardar Producto</button>
-            <button type="button" onclick="document.getElementById('modal-producto').style.display='none'">Cancelar</button>
-        </form>
+    <input type="text" id="p-nombre" placeholder="Nombre" required style="width:100%; margin-bottom:10px;" class="custom-input">
+    <textarea id="p-descripcion" placeholder="Descripción del producto" required style="width:100%; margin-bottom:10px; font-family:inherit" class="custom-input"></textarea>
+    
+    <input type="number" id="p-precio" placeholder="Precio" min="0.01" step="0.01" required style="width:100%; margin-bottom:10px;" class="custom-input">
+    <input type="number" id="p-stock" placeholder="Stock" min="0" required style="width:100%; margin-bottom:10px;" class="custom-input">
+    
+    <input type="text" id="p-imagen" placeholder="URL de la imagen" required style="width:100%; margin-bottom:10px;" class="custom-input">
+    <select id="categoria-select" class="custom-input" required style="width:100%; margin-bottom:15px;"></select>
+    
+    <button type="submit" class="btn-base" style="width:100%; margin-bottom:5px;">Guardar Producto</button>
+    <button type="button" class="btn-registro" style="width:100%;" onclick="document.getElementById('modal-producto').style.display='none'">Cancelar</button>
+</form>
         <input type="hidden" id="p-id-edit" value="">
     </div>
 </div>

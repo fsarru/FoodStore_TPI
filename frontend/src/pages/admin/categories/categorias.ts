@@ -2,56 +2,93 @@ import { fetchCategorias } from "../../../utils/data";
 import { getAdminData, saveAdminData } from "../../../utils/storage";
 import { checkAuthUser } from "../../../utils/auth";
 
-// Validación de sesión y rol: Solo ADMIN puede acceder
 checkAuthUser(["ADMIN"]);
 
-const renderCategorias = async () => {
-    const tbody = document.getElementById("cat-table-body");
-    if (!tbody) return;
+const tbody = document.getElementById("cat-table-body");
+const modalCat = document.getElementById("modal-categoria") as HTMLElement;
+const formCat = document.getElementById("form-categoria") as HTMLFormElement;
+const btnAddCat = document.getElementById("btn-add-cat");
 
-    // 1. LÓGICA DE SEMILLA: Buscar en memoria (localStorage) primero
+const renderCategorias = async () => {
+    if (!tbody) return;
     let cats = getAdminData("categorias");
 
-    // 2. Si está vacío, traemos los datos del JSON y los guardamos
     if (cats.length === 0) {
-        try {
-            cats = await fetchCategorias();
-            saveAdminData("categorias", cats);
-        } catch (error) {
-            console.error("Error al cargar las categorías:", error);
-            tbody.innerHTML = "<tr><td colspan='4' style='text-align: center;'>Error al cargar categorías</td></tr>";
-            return;
-        }
+        cats = await fetchCategorias();
+        saveAdminData("categorias", cats);
     }
 
-    // Validación por si el JSON realmente viene vacío
-    if (cats.length === 0) {
-        tbody.innerHTML = "<tr><td colspan='4' style='text-align: center; padding: 20px;'>No hay categorías registradas.</td></tr>";
-        return;
-    }
+    // Filtramos las que no estén eliminadas de forma lógica (soft delete)
+    const activas = cats.filter((c: any) => !c.eliminado);
 
-    // 3. Renderizar la tabla (Rúbrica exige: ID, imagen, nombre y descripción)
-    tbody.innerHTML = cats.map((c: any) => `
+    tbody.innerHTML = activas.map((c: any) => `
         <tr style="border-bottom: 1px solid #eee;">
             <td style="padding: 10px;">${c.id}</td>
             <td style="padding: 10px;">
-                <img src="${c.imagen || 'https://via.placeholder.com/50'}" 
-                     width="50" 
-                     style="border-radius: 6px; object-fit: cover; aspect-ratio: 1/1; box-shadow: 0 2px 4px rgba(0,0,0,0.1);" 
-                     onerror="this.src='https://via.placeholder.com/50'">
+                <img src="${c.imagen || 'https://via.placeholder.com/50'}" width="50" style="border-radius: 6px; object-fit: cover; aspect-ratio: 1/1;" onerror="this.src='https://via.placeholder.com/50'">
             </td>
-            <td style="padding: 10px; font-weight: 500; color: #2c3e50;">${c.nombre || c.denominacion || 'Sin nombre'}</td>
+            <td style="padding: 10px; font-weight: 500;">${c.nombre || c.denominacion || 'Sin nombre'}</td>
             <td style="padding: 10px; color: #7f8c8d;">${c.descripcion || 'Sin descripción'}</td>
+            <td style="padding: 10px;">
+                <button class="btn-edit" data-id="${c.id}">Editar</button>
+                <button class="btn-delete" data-id="${c.id}">Eliminar</button>
+            </td>
         </tr>
     `).join("");
 };
 
-// Lógica de logout por si tienes el botón en el Navbar del Admin
-const logoutBtn = document.getElementById("logoutButton");
-logoutBtn?.addEventListener("click", () => {
-    localStorage.removeItem("user");
-    localStorage.removeItem("cart");
-    window.location.href = "/src/pages/auth/login/login.html";
+// --- ALTA / EDICIÓN ---
+btnAddCat?.addEventListener("click", () => {
+    formCat.reset();
+    (document.getElementById("c-id-edit") as HTMLInputElement).value = "";
+    modalCat.style.display = "flex";
+});
+
+formCat?.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const idEdit = (document.getElementById("c-id-edit") as HTMLInputElement).value;
+    const nombre = (document.getElementById("c-nombre") as HTMLInputElement).value;
+    const descripcion = (document.getElementById("c-descripcion") as HTMLTextAreaElement).value;
+    const imagen = (document.getElementById("c-imagen") as HTMLInputElement).value;
+
+    let cats = getAdminData("categorias");
+
+    if (idEdit) {
+        const index = cats.findIndex((c: any) => c.id === parseInt(idEdit));
+        cats[index] = { ...cats[index], nombre, denominacion: nombre, descripcion, imagen };
+    } else {
+        cats.push({ id: Date.now(), nombre, denominacion: nombre, descripcion, imagen, eliminado: false });
+    }
+
+    saveAdminData("categorias", cats);
+    modalCat.style.display = "none";
+    renderCategorias();
+});
+
+// --- ELIMINAR / CARGAR PARA EDICIÓN ---
+tbody?.addEventListener("click", (e) => {
+    const target = e.target as HTMLElement;
+    const id = parseInt(target.getAttribute("data-id") || "0");
+    let cats = getAdminData("categorias");
+
+    if (target.classList.contains("btn-delete")) {
+        // CORRECCIÓN: Confirmación obligatoria antes de eliminar
+        if (confirm("⚠️ ¿Estás totalmente seguro de que deseas eliminar esta categoría?")) {
+            const index = cats.findIndex((c: any) => c.id === id);
+            cats[index].eliminado = true; // Soft delete
+            saveAdminData("categorias", cats);
+            renderCategorias();
+        }
+    } else if (target.classList.contains("btn-edit")) {
+        const cat = cats.find((c: any) => c.id === id);
+        if (cat) {
+            (document.getElementById("c-nombre") as HTMLInputElement).value = cat.nombre || cat.denominacion;
+            (document.getElementById("c-descripcion") as HTMLTextAreaElement).value = cat.descripcion || "";
+            (document.getElementById("c-imagen") as HTMLInputElement).value = cat.imagen || "";
+            (document.getElementById("c-id-edit") as HTMLInputElement).value = cat.id.toString();
+            modalCat.style.display = "flex";
+        }
+    }
 });
 
 renderCategorias();
